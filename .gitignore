@@ -1,0 +1,13 @@
+# Raw and coded data (regenerated from the GitHub API; not committed)
+github_sycophancy_*.csv
+github_sycophancy_*.xlsx
+
+# Secrets
+.env
+*.key
+secrets*
+
+# Notebook checkpoints and caches
+.ipynb_checkpoints/
+__pycache__/
+*.pyc
