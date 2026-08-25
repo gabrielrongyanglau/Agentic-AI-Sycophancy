@@ -26,7 +26,7 @@ The corpus contains 30 repositories, five in each of six functional categories.
 | --- | --- |
 | Agent SDKs and orchestration | `microsoft/agent-framework`, `microsoft/semantic-kernel`, `langchain-ai/langgraph`, `openai/openai-agents-python`, `google/adk-python` |
 | Multi-agent collaboration | `microsoft/autogen`, `crewAIInc/crewAI`, `camel-ai/camel`, `FoundationAgents/MetaGPT`, `OpenBMB/ChatDev` |
-| Coding and software-engineering agents | `OpenHands/OpenHands`, `cline/cline`, `openai/codex`, `google-gemini/gemini-cli`, `aaif-goose/goose` |
+| Coding and software-engineering agents | `OpenHands/OpenHands`, `cline/cline`, `openai/codex`, `google-gemini/gemini-cli`, `anthropics/claude-code` |
 | Browser, research, and action agents | `browser-use/browser-use`, `FoundationAgents/OpenManus`, `assafelovic/gpt-researcher`, `langchain-ai/open_deep_research`, `SamuelSchmidgall/AgentLaboratory` |
 | Memory and personalisation infrastructure | `mem0ai/mem0`, `letta-ai/letta`, `getzep/graphiti`, `langchain-ai/langmem`, `langgenius/dify` |
 | Evaluation, observability, and control | `promptfoo/promptfoo`, `confident-ai/deepeval`, `langfuse/langfuse`, `Arize-ai/phoenix`, `AgentOps-AI/agentops` |
