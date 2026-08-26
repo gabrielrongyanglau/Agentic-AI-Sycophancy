@@ -20,20 +20,20 @@ Raw GitHub issue/comment text is not included in this repository because it cont
 
 ## Repository corpus
 
-The corpus contains 30 repositories, five in each of six functional categories.
+The corpus contains 55 repositories across six functional categories (8-10 per category), expanded from the original 30 after a pilot run showed uneven coverage.
 
 | Category | Repositories |
 | --- | --- |
-| Agent SDKs and orchestration | `microsoft/agent-framework`, `microsoft/semantic-kernel`, `langchain-ai/langgraph`, `openai/openai-agents-python`, `google/adk-python` |
-| Multi-agent collaboration | `microsoft/autogen`, `crewAIInc/crewAI`, `camel-ai/camel`, `FoundationAgents/MetaGPT`, `OpenBMB/ChatDev` |
-| Coding and software-engineering agents | `OpenHands/OpenHands`, `cline/cline`, `openai/codex`, `google-gemini/gemini-cli`, `anthropics/claude-code` |
-| Browser, research, and action agents | `browser-use/browser-use`, `FoundationAgents/OpenManus`, `assafelovic/gpt-researcher`, `langchain-ai/open_deep_research`, `SamuelSchmidgall/AgentLaboratory` |
-| Memory and personalisation infrastructure | `mem0ai/mem0`, `letta-ai/letta`, `getzep/graphiti`, `langchain-ai/langmem`, `langgenius/dify` |
-| Evaluation, observability, and control | `promptfoo/promptfoo`, `confident-ai/deepeval`, `langfuse/langfuse`, `Arize-ai/phoenix`, `AgentOps-AI/agentops` |
+| Agent SDKs and orchestration (10) | `microsoft/agent-framework`, `microsoft/semantic-kernel`, `langchain-ai/langgraph`, `openai/openai-agents-python`, `google/adk-python`, `langchain-ai/langchain`, `Significant-Gravitas/AutoGPT`, `pydantic/pydantic-ai`, `agno-agi/agno`, `mastra-ai/mastra` |
+| Multi-agent collaboration (9) | `microsoft/autogen`, `crewAIInc/crewAI`, `camel-ai/camel`, `FoundationAgents/MetaGPT`, `OpenBMB/ChatDev`, `agentscope-ai/agentscope`, `agentscope-ai/AgentTeams`, `TransformerOptimus/SuperAGI`, `VoltAgent/voltagent` |
+| Coding and software-engineering agents (9) | `OpenHands/OpenHands`, `cline/cline`, `openai/codex`, `google-gemini/gemini-cli`, `anthropics/claude-code`, `SWE-agent/SWE-agent`, `aider-ai/aider`, `continuedev/continue`, `TabbyML/tabby` |
+| Browser, research, and action agents (10) | `browser-use/browser-use`, `FoundationAgents/OpenManus`, `assafelovic/gpt-researcher`, `langchain-ai/open_deep_research`, `SamuelSchmidgall/AgentLaboratory`, `Skyvern-AI/skyvern`, `nanobrowser/nanobrowser`, `vercel-labs/agent-browser`, `browser-use/web-ui`, `run-llama/llama_index` |
+| Memory and personalisation infrastructure (8) | `mem0ai/mem0`, `letta-ai/letta`, `getzep/graphiti`, `langchain-ai/langmem`, `langgenius/dify`, `getzep/zep`, `topoteretes/cognee`, `supermemoryai/supermemory` |
+| Evaluation, observability, and control (9) | `promptfoo/promptfoo`, `confident-ai/deepeval`, `langfuse/langfuse`, `Arize-ai/phoenix`, `AgentOps-AI/agentops`, `openai/evals`, `explodinggradients/ragas`, `guardrails-ai/guardrails`, `NVIDIA/NeMo-Guardrails` |
 
-A note on Dify: although Dify is primarily an application-development and workflow platform, it is retained in the memory and personalisation category because it represents stateful, personalised agent deployment at scale, with built-in conversation memory, variable/state management, and user-facing personalisation features. Its issue tracker is therefore a substantial source of memory- and personalisation-related agent discussion. Analysts who prefer a stricter reading can recategorise or exclude it using the `repo_category` column.
+Only repositories with substantive public issue trackers are included; demonstration and sample-collection repositories were excluded. A note on Dify: although Dify is primarily an application-development and workflow platform, it is retained in the memory and personalisation category because it represents stateful, personalised agent deployment at scale. Analysts who prefer a stricter reading can recategorise or exclude it using the `repo_category` column.
 
-Because GitHub's search API can silently return zero results for renamed or moved repositories, the notebook resolves every path to its current canonical location via the GitHub API before searching, and reports any path that cannot be resolved.
+Because GitHub's search API can silently return zero results for renamed or moved repositories, the notebook resolves every path to its current canonical location via the GitHub API before searching, and reports any path that cannot be resolved (any unresolved path is skipped, and the search log records exactly which repositories were searched).
 
 ## Search strategy
 
@@ -43,11 +43,19 @@ Only issues **created** between `START_DATE` (2023-01-01) and `END_DATE` (2026-0
 
 ### Search lexicon
 
-The lexicon contains 106 terms across eight facets, defined in the `SYCOPHANCY_TERMS` cell: Agreement and Opinion Conformity; Capitulation and Answer Flipping; Flattery and Excessive Validation; Confirmation-Biased Evidence; Agentic Action Sycophancy; Inter-Agent Deference and Consensus; Evaluator and Judge Bias; and Personalisation and Memory Sycophancy.
+The lexicon contains 112 terms across eight dimensions that separate primary sycophancy from adjacent phenomena, defined in the `SYCOPHANCY_TERMS` cell: Direct Sycophancy and Agreement; Opinion Conformity and Belief Reinforcement; Capitulation and Answer Flipping; Evidence and Reasoning Conformity; Agentic Action and Plan Sycophancy; Inter-Agent Deference and Consensus; Personalisation and Memory Sycophancy; and Evaluator and Judge Conformity.
 
-Terms range from direct sycophancy vocabulary ("sycophantic", "blind agreement", "excessive validation") through agent-action phrasings ("blindly follows", "accepts a bad plan", "selective retrieval", "follows the supervisor blindly") to broader discovery terms with lower specificity ("defers to", "flip flops", "stale preference"). Highly generic conversational terms with unfavourable signal-to-noise ratios ("great question", "overly positive", "lenient", "conformity", bare "one-sided", bare "second-guess") were removed or replaced with more specific phrasings following lexicon review. Because hits are candidates for downstream analysis rather than classifications, terms are not weighted or typed at collection time; the `all_search_terms` and `all_search_dimensions` columns record exactly which terms retrieved each issue, so term-level sensitivity analyses remain possible downstream.
+Each term carries a diagnostic level, recorded per issue in the outputs (`search_term_level`, `all_search_term_levels`) so analyses can report how many candidates came from core versus exploratory searches:
 
-For each repository and search term, issues are retrieved using queries of the form `repo:{repository} is:issue "{search_term}" created:{start}..{end}`. With 30 repositories this yields up to 3,180 repository-term searches before window splitting. Most multi-word phrases return zero results for most repositories, and a zero-result query costs a single request, so the marginal cost of specific low-frequency phrases is small.
+| Level | n | Role |
+| --- | --- | --- |
+| `core` | 34 | High-precision, direct sycophancy vocabulary (e.g. "sycophancy", "pandering", "changes answer after pushback"). |
+| `behavioural` | 55 | Agentic manifestations in actions, plans, retrieval, and compliance (e.g. "fails to challenge", "accepts a bad plan", "blindly follows the supervisor"). |
+| `exploratory` | 23 | Broader discovery terms (e.g. "echo chamber", "false consensus", "evaluator bias"). Hits are candidates only. |
+
+Following a pilot run of the earlier 30-repository design, highly ambiguous terms were removed: "cherry-pick" (which returned predominantly git cherry-pick discussion; replaced by "cherry-picks evidence"), standalone "defers to", standalone "over-validation", "lenient", "judge bias", "position bias", "verbosity bias", and "reward hacking" (broader evaluation phenomena, not necessarily sycophancy; replaced by evaluator-conformity phrasings such as "judge favours its own answer" and "critic fails to challenge the answer").
+
+For each repository and search term, issues are retrieved using queries of the form `repo:{repository} is:issue "{search_term}" created:{start}..{end}`. With 55 repositories this yields up to 6,160 repository-term searches before window splitting. Most multi-word phrases return zero results for most repositories, and a zero-result query costs a single request. A pilot run also indicated that GitHub issue search matched issue titles and bodies rather than comment text, so hits represent issues framed by the reporter in sycophancy-relevant terms; this should be stated in the Methods.
 
 An optional dry-run cell queries only the `total_count` for every repo-term pair (one request each) and saves them to `github_sycophancy_dry_run_counts.csv`, giving an exact pre-deduplication corpus size estimate before committing to full collection.
 
@@ -59,6 +67,18 @@ GitHub search returns at most 1,000 results per query. The notebook retrieves **
 
 Duplicates arise across search terms and across adjacent date windows. Before removal, every search term, facet, and term type that retrieved a given issue is aggregated into `all_search_terms`, `all_search_dimensions`, and `all_search_term_types`, so multi-term hits are preserved.
 
+## Two-stage design and sampling frame
+
+This repository implements Stage 1 of a two-stage design: a high-recall candidate harvest. Stage 2 (false-positive screening and multi-label coding) is handled separately, but this notebook constructs its sampling frame:
+
+1. every thread from repositories with at most 75 candidate issues is selected;
+2. repositories over the cap are downsampled to 75, stratified proportionally by search dimension (seed 42), so prolific repositories such as `anthropics/claude-code` cannot dominate the coded corpus;
+3. any dimension with fewer than 25 selected threads (multi-label membership via `all_search_dimensions`) is topped up from unselected threads where available.
+
+Selection is recorded as a `selected_for_coding` flag in `github_sycophancy_sampling_frame.csv`; no rows are dropped, so the full candidate corpus remains available. Zero-comment issues are labelled (`zero_comments`) rather than excluded, so screening can treat report-only threads separately from discussed threads.
+
+The final-check cell prints the reporting funnel (raw keyword hits, unique issues, zero-comment issues, selected threads) for direct transfer into the Methods.
+
 ## Reproducibility settings
 
 | Setting | Value |
@@ -66,11 +86,12 @@ Duplicates arise across search terms and across adjacent date windows. Before re
 | `START_DATE` | 2023-01-01 |
 | `END_DATE` | 2026-06-30 |
 | `SEARCH_SLEEP_SECONDS` | 2 |
-| Result cap handling | Recursive date-window splitting at 1,000 results |
+| Result cap handling | Recursive date-window splitting at 1,000 results; near-cap flag at 900 |
+| `MAX_PER_REPO` (sampling frame) | 75 |
+| `MIN_PER_DIMENSION` (sampling frame) | 25 |
+| `RANDOM_SEED` | 42 |
 
-All unique candidate issues retrieved by the search proceed to comment retrieval and thread construction. No comment-count filter or per-dimension sampling is applied.
-
-Note on runtime: 3,180 base queries plus pagination and window splits, at a 2-second sleep per search request (the authenticated search limit is 30 requests per minute), means the search stage takes roughly two to four hours, before comment retrieval. A GitHub personal access token is required in practice.
+Note on runtime: 6,160 base queries plus pagination and window splits, at a 2-second sleep per search request (the authenticated search limit is 30 requests per minute), means the search stage takes roughly four to six hours. Comment retrieval checkpoints every 200 issues and resumes automatically, so the run can span sessions. A GitHub personal access token is required in practice.
 
 ## Requirements
 
@@ -97,6 +118,7 @@ openpyxl
 | `github_sycophancy_search_log.csv` | One row per executed search query: window, total count, results retrieved, split/collected action, truncation flag. |
 | `github_sycophancy_issue_comments.csv` / `.xlsx` | All public comments retrieved for the unique candidate issues, with author, role, and timestamps. This file is the authoritative source for comment-level metadata. Comment retrieval checkpoints to this file every 200 issues and resumes automatically if the session is interrupted. |
 | `github_sycophancy_issue_threads.csv` / `.xlsx` | One structured thread per issue. The `full_text` field interleaves the issue and its comments in chronological order with markers of the form `[ISSUE | author (role) | timestamp]` and `[COMMENT n | author (role) | timestamp]`. |
+| `github_sycophancy_sampling_frame.csv` / `.xlsx` | The full thread corpus with a seeded `selected_for_coding` flag implementing repository caps and dimension floors for Stage-2 screening and coding. |
 
 ## Citation
 
